@@ -3,35 +3,38 @@ import streamlit as st
 import base64
 from openai import OpenAI
 
-# Estilo visual con temática oceánica
+# Estilo visual con colores oceánicos personalizados
 st.markdown("""
     <style>
         body {
-            background-color: #e0f7fa;  /* Azul claro del océano */
-            color: #00796b;  /* Texto en verde mar */
+            background-color: #003366;  /* Azul marino profundo */
+            color: #ffffff;  /* Texto blanco */
         }
         .stTitle {
-            color: #004d40;  /* Título en verde océano oscuro */
+            color: #00bcd4;  /* Azul océano claro para el título */
         }
         .stSubheader {
-            color: #0077b6;  /* Azul océano para los subtítulos */
+            color: #4caf50;  /* Verde agua marina para los subtítulos */
         }
         .stButton>button {
-            background-color: #004d40;  /* Botones de color verde mar */
-            color: white;  /* Texto blanco en el botón */
+            background-color: #00897b;  /* Verde océano oscuro para los botones */
+            color: white;  /* Texto blanco en los botones */
         }
         .stImage>div>img {
             border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
         .stSidebar {
-            background-color: #00897b;  /* Barra lateral verde suave */
+            background-color: #80deea;  /* Azul claro para la barra lateral */
         }
         .stTextInput>div>div>input {
-            background-color: #80d0c7;  /* Fondo de los campos de texto en verde suave */
+            background-color: #4db6ac;  /* Fondo de los campos de texto en verde suave */
         }
         .stTextArea>div>div>textarea {
-            background-color: #80d0c7;  /* Fondo del área de texto */
+            background-color: #4db6ac;  /* Fondo del área de texto */
+        }
+        .stMarkdown {
+            color: #ffffff;  /* Texto de Markdown en blanco */
         }
     </style>
 """, unsafe_allow_html=True)
@@ -51,7 +54,7 @@ except Exception as e:
 
 # Barra lateral con descripción
 with st.sidebar:
-    st.subheader("🌊 **Este agente te ayudará a analizar la imagen cargada**")
+    st.subheader("🌊 **Este agente te ayudará a realizar análisis sobre la imagen cargada**")
     st.write("""
     Sube una imagen y pregunta sobre su contenido. El agente procesará la imagen usando IA y generará respuestas.
     """)
@@ -140,4 +143,3 @@ else:
         st.warning("⚠️ **Por favor sube una imagen.**")
     if not api_key:
         st.warning("⚠️ **Por favor ingresa tu clave de API.**")
-
