@@ -101,7 +101,7 @@ if uploaded_file is not None and api_key and analyze_button:
                 f"\n\n**Contexto adicional proporcionado por el usuario:**\n{additional_details}"
             )
     
-        
+        # Crear la carga útil para la solicitud - CORREGIDO FORMATO
         messages = [
             {
                 "role": "user",
@@ -117,9 +117,9 @@ if uploaded_file is not None and api_key and analyze_button:
             }
         ]
     
-        
+        # Hacer la solicitud a la API de OpenAI
         try:
-            
+            # Stream de la respuesta
             full_response = ""
             message_placeholder = st.empty()
             for completion in client.chat.completions.create(
@@ -129,13 +129,13 @@ if uploaded_file is not None and api_key and analyze_button:
                 if completion.choices[0].delta.content is not None:
                     full_response += completion.choices[0].delta.content
                     message_placeholder.markdown(full_response + "▌")
-            
+            # Actualización final después de que termine el stream
             message_placeholder.markdown(full_response)
     
         except Exception as e:
             st.error(f"❌ **Ocurrió un error**: {e}")
 else:
-    
+    # Advertencias si se requieren acciones del usuario
     if not uploaded_file and analyze_button:
         st.warning("⚠️ **Por favor sube una imagen.**")
     if not api_key:
