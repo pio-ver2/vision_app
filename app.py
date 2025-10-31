@@ -3,60 +3,105 @@ import streamlit as st
 import base64
 from openai import OpenAI
 
-# Function to encode the image to base64
-def encode_image(image_file):
-    return base64.b64encode(image_file.getvalue()).decode("utf-8")
+# Estilo visual con temática oceánica
+st.markdown("""
+    <style>
+        body {
+            background-color: #e0f7fa;  /* Azul claro del océano */
+            color: #00796b;  /* Texto en verde mar */
+        }
+        .stTitle {
+            color: #004d40;  /* Título en verde océano oscuro */
+        }
+        .stSubheader {
+            color: #0077b6;  /* Azul océano para los subtítulos */
+        }
+        .stButton>button {
+            background-color: #004d40;  /* Botones de color verde mar */
+            color: white;  /* Texto blanco en el botón */
+        }
+        .stImage>div>img {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .stSidebar {
+            background-color: #00897b;  /* Barra lateral verde suave */
+        }
+        .stTextInput>div>div>input {
+            background-color: #80d0c7;  /* Fondo de los campos de texto en verde suave */
+        }
+        .stTextArea>div>div>textarea {
+            background-color: #80d0c7;  /* Fondo del área de texto */
+        }
+    </style>
+""", unsafe_allow_html=True)
 
+# Título de la aplicación con emojis
+st.title("🌊 **Análisis de Imagen: Inteligencia Artificial en Acción** 🤖")
 
-st.set_page_config(page_title="Analisis de imagen", layout="centered", initial_sidebar_state="collapsed")
-# Streamlit page setup
-st.title("Análisis de Imagen:🤖🏞️")
-ke = st.text_input('Ingresa tu Clave')
+# Mostrar la versión de Python
+st.write("👨‍💻 **Versión de Python**:", platform.python_version())
+
+# Cargar y mostrar imagen relacionada con la tecnología oceánica
+try:
+    image = Image.open('Chat_pdf.png')  # Asegúrate de que esta imagen esté disponible
+    st.image(image, width=350)
+except Exception as e:
+    st.warning(f"⚠️ No se pudo cargar la imagen: {e}")
+
+# Barra lateral con descripción
+with st.sidebar:
+    st.subheader("🌊 **Este agente te ayudará a analizar la imagen cargada**")
+    st.write("""
+    Sube una imagen y pregunta sobre su contenido. El agente procesará la imagen usando IA y generará respuestas.
+    """)
+
+# Clave API de OpenAI
+ke = st.text_input('🔑 **Ingresa tu Clave de OpenAI**', type="password")
 os.environ['OPENAI_API_KEY'] = ke
 
-
-# Retrieve the OpenAI API Key from secrets
+# Recuperar la clave de API de OpenAI
 api_key = os.environ['OPENAI_API_KEY']
 
-# Initialize the OpenAI client with the API key
+# Inicializar cliente de OpenAI
 client = OpenAI(api_key=api_key)
 
-# File uploader allows user to add their own image
-uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
+# Cargar archivo de imagen
+uploaded_file = st.file_uploader("📥 **Sube una imagen**", type=["jpg", "png", "jpeg"])
 
 if uploaded_file:
-    # Display the uploaded image
-    with st.expander("Image", expanded = True):
+    # Mostrar imagen cargada
+    with st.expander("Imagen cargada", expanded=True):
         st.image(uploaded_file, caption=uploaded_file.name, use_container_width=True)
 
-# Toggle for showing additional details input
-show_details = st.toggle("Pregunta algo específico sobre la imagen", value=False)
+# Toggle para mostrar detalles adicionales
+show_details = st.checkbox("🔍 **Pregunta algo específico sobre la imagen**", value=False)
 
 if show_details:
-    # Text input for additional details about the image, shown only if toggle is True
+    # Entrada de texto para detalles adicionales, solo si se activa el toggle
     additional_details = st.text_area(
-        "Adiciona contexto de la imagen aqui:",
+        "📝 **Añade contexto sobre la imagen aquí**:",
         disabled=not show_details
     )
 
-# Button to trigger the analysis
-analyze_button = st.button("Analiza la imagen", type="secondary")
+# Botón para activar el análisis
+analyze_button = st.button("🔍 **Analizar Imagen**", type="secondary")
 
-# Check if an image has been uploaded, if the API key is available, and if the button has been pressed
+# Verificar si se cargó una imagen, si la clave de API está disponible, y si se presionó el botón
 if uploaded_file is not None and api_key and analyze_button:
 
-    with st.spinner("Analizando ..."):
-        # Encode the image
+    with st.spinner("🔄 **Analizando...**"):
+        # Codificar la imagen
         base64_image = encode_image(uploaded_file)
     
-        prompt_text = ("Describe what you see in the image in spanish")
+        prompt_text = "Describe lo que ves en la imagen en español"
     
         if show_details and additional_details:
             prompt_text += (
-                f"\n\nAdditional Context Provided by the User:\n{additional_details}"
+                f"\n\n**Contexto adicional proporcionado por el usuario:**\n{additional_details}"
             )
     
-        # Create the payload for the completion request - CORRECTED FORMAT
+        
         messages = [
             {
                 "role": "user",
@@ -72,27 +117,27 @@ if uploaded_file is not None and api_key and analyze_button:
             }
         ]
     
-        # Make the request to the OpenAI API
+        
         try:
-            # Stream the response
+            
             full_response = ""
             message_placeholder = st.empty()
             for completion in client.chat.completions.create(
-                model="gpt-4o", messages=messages,   
+                model="gpt-4", messages=messages,   
                 max_tokens=1200, stream=True
             ):
-                # Check if there is content to display
                 if completion.choices[0].delta.content is not None:
                     full_response += completion.choices[0].delta.content
                     message_placeholder.markdown(full_response + "▌")
-            # Final update to placeholder after the stream ends
+            
             message_placeholder.markdown(full_response)
     
         except Exception as e:
-            st.error(f"An error occurred: {e}")
+            st.error(f"❌ **Ocurrió un error**: {e}")
 else:
-    # Warnings for user action required
+    
     if not uploaded_file and analyze_button:
-        st.warning("Please upload an image.")
+        st.warning("⚠️ **Por favor sube una imagen.**")
     if not api_key:
-        st.warning("Por favor ingresa tu API key.")
+        st.warning("⚠️ **Por favor ingresa tu clave de API.**")
+
