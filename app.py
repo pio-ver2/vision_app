@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 import base64
+import platform  # Asegúrate de importar platform correctamente
 from openai import OpenAI
 
 # Estilo visual con colores oceánicos personalizados
@@ -17,7 +18,7 @@ st.markdown("""
             color: #4caf50;  /* Verde agua marina para los subtítulos */
         }
         .stButton>button {
-            background-color: #00897b;  /* Verde océano oscuro para los botones */
+            background-color: #004d40;  /* Botones de color verde mar */
             color: white;  /* Texto blanco en los botones */
         }
         .stImage>div>img {
